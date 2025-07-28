@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"orderedMap"
+	"github.com/Patrick7241/orderedMap"
 	"testing"
 )
 
@@ -33,6 +33,7 @@ func TestOrderedMap(t *testing.T) {
 	}
 	t.Log(om)
 	om.Clear()
+	t.Log(om)
 
 	// test escape html
 	dangerousValue := "<script>alert('xss')</script>"
