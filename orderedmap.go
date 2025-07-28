@@ -1,5 +1,11 @@
 package orderedMap
 
+import (
+	"fmt"
+	"html"
+	"strings"
+)
+
 type OrderedMap struct {
 	// store map's order
 	keys []string
@@ -23,6 +29,10 @@ func New(escapeHTML ...bool) *OrderedMap {
 	}
 }
 
+func (om *OrderedMap) SetEscapeHTML(on bool) {
+	om.escapeHTML = on
+}
+
 // Set a key-value pair
 func (om *OrderedMap) Set(key string, value interface{}) {
 	if _, ok := om.values[key]; !ok {
@@ -35,4 +45,46 @@ func (om *OrderedMap) Set(key string, value interface{}) {
 // Get a value by key
 func (om *OrderedMap) Get(key string) (interface{}, bool) {
 	return om.values[key], om.values[key] != nil
+}
+
+// Delete a key-value pair
+func (om *OrderedMap) Delete(key string) {
+	if _, ok := om.values[key]; !ok {
+		return
+	}
+	// delete key
+	for i, k := range om.keys {
+		if k == key {
+			om.keys = append(om.keys[:i], om.keys[i+1:]...)
+			break
+		}
+	}
+	// delete key-value pair
+	delete(om.values, key)
+}
+
+// Clear the ordered map
+func (om *OrderedMap) Clear() {
+	om.keys = make([]string, 0)
+	om.values = make(map[string]interface{})
+}
+
+// String returns a string representation of the ordered map
+func (om *OrderedMap) String() string {
+	var b strings.Builder
+	b.WriteString("{")
+	for i, key := range om.keys {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		val := om.values[key]
+		if om.escapeHTML {
+			if strVal, ok := val.(string); ok {
+				val = html.EscapeString(strVal)
+			}
+		}
+		b.WriteString(fmt.Sprintf("%q: %q", key, val))
+	}
+	b.WriteString("}")
+	return b.String()
 }
