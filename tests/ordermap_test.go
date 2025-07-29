@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/Patrick7241/orderedMap"
 	"testing"
@@ -42,4 +43,24 @@ func TestOrderedMap(t *testing.T) {
 	t.Log(om)
 	om.SetEscapeHTML(true)
 	t.Log(om)
+	om.Clear()
+
+	// test ser and deser
+	om.Set("你好", "va")
+	om.Set("shello", "value2")
+	om.Set("大", "vale3")
+	om.Set("卡达克", "value4")
+
+	for i := 0; i < 10; i++ {
+		jsonData, _ := json.Marshal(om)
+		t.Logf("第%d次： %v", i, string(jsonData))
+	}
+
+	//test := make(map[string]interface{})
+	//err := json.Unmarshal(jsonData, &test)
+	//if err != nil {
+	//	t.Error(err)
+	//}
+	//t.Logf("third: %s", test)
+
 }

@@ -1,6 +1,8 @@
 package orderedMap
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"html"
 	"strings"
@@ -87,4 +89,33 @@ func (om *OrderedMap) String() string {
 	}
 	b.WriteString("}")
 	return b.String()
+}
+
+// MarshalJSON returns a JSON representation of the ordered map
+func (om *OrderedMap) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(om.escapeHTML)
+	for i, k := range om.keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		// add key
+		if err := encoder.Encode(k); err != nil {
+			return nil, err
+		}
+		buf.WriteByte(':')
+		// add value
+		if err := encoder.Encode(om.values[k]); err != nil {
+			return nil, err
+		}
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+// UnmarshalJSON parses a JSON-encoded string and stores the result in the ordered map
+func (om *OrderedMap) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &om.values)
 }
